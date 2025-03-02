@@ -10,8 +10,15 @@ class Login extends Component {
     password: ''
   };
 
+  handleChange = (e) => {
+    this.setState({
+      [e.target.name]: e.target.value
+    });
+  };
+
   handleSubmit = async (e) => {
     e.preventDefault();
+    console.log('Submitting:', this.state); // Debug log
     await this.props.login({
       username: this.state.username,
       password: this.state.password
@@ -42,8 +49,10 @@ class Login extends Component {
                 </label>
                 <div className="mt-1">
                   <Input
+                    name="username"
+                    type="text"
                     value={this.state.username}
-                    onChange={(e) => this.setState({ username: e.target.value })}
+                    onChange={this.handleChange}
                     placeholder="Enter your username"
                     required
                   />
@@ -56,9 +65,10 @@ class Login extends Component {
                 </label>
                 <div className="mt-1">
                   <Input
+                    name="password"
                     type="password"
                     value={this.state.password}
-                    onChange={(e) => this.setState({ password: e.target.value })}
+                    onChange={this.handleChange}
                     placeholder="Enter your password"
                     required
                   />
