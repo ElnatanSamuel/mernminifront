@@ -73,13 +73,28 @@ export const logout = () => dispatch => {
 
 // Add this new action to check auth state on refresh
 export const checkAuthState = () => dispatch => {
-  const token = localStorage.getItem('token');
-  const user = JSON.parse(localStorage.getItem('user') || 'null');
-  
-  if (token && user) {
-    dispatch({
-      type: AUTH_SUCCESS,
-      payload: { token, user }
-    });
+  try {
+    const token = localStorage.getItem('token');
+    const userStr = localStorage.getItem('user');
+    
+    if (token && userStr) {
+      const user = JSON.parse(userStr);
+      if (user && user.role) {  // Validate user object
+        dispatch({
+          type: AUTH_SUCCESS,
+          payload: { token, user }
+        });
+      } else {
+        // Invalid user data, clear storage
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        dispatch({ type: LOGOUT });
+      }
+    }
+  } catch (error) {
+    console.error('Auth state restoration failed:', error);
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    dispatch({ type: LOGOUT });
   }
 }; 
