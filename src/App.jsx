@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { Provider } from 'react-redux';
 import store from './redux/store';
+import { connect } from 'react-redux';
+import { checkAuthState } from './redux/actions/authActions';
 
 import Login from './components/Login';
 import ProtectedRoute from './components/ProtectedRoute';
@@ -13,6 +15,10 @@ import Notifications from './components/Notifications';
 import Signup from './components/Signup';
 
 class App extends Component {
+  componentDidMount() {
+    this.props.checkAuthState();
+  }
+
   render() {
     return (
       <Provider store={store}>
@@ -51,4 +57,4 @@ class App extends Component {
   }
 }
 
-export default App;
+export default connect(null, { checkAuthState })(App);

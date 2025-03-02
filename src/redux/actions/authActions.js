@@ -2,19 +2,27 @@ import { AUTH_SUCCESS, AUTH_FAIL, LOGOUT } from './types';
 import { authAPI } from '../../services/api';
 import { toast } from 'react-toastify';
 
-export const login = (username, password) => async (dispatch) => {
+export const login = (credentials) => async (dispatch) => {
   try {
-    const response = await authAPI.login({ username, password });
+    const response = await authAPI.login(credentials);
     if (!response.data.token || !response.data.role) {
       throw new Error('Invalid response from server');
     }
+    
+    // Store both token and user data
+    localStorage.setItem('token', response.data.token);
+    localStorage.setItem('user', JSON.stringify({
+      username: response.data.username,
+      role: response.data.role
+    }));
+
     dispatch({
       type: AUTH_SUCCESS,
       payload: {
         token: response.data.token,
-        user: { 
+        user: {
           username: response.data.username,
-          role: response.data.role 
+          role: response.data.role
         }
       }
     });
@@ -56,7 +64,22 @@ export const signup = (userData) => async (dispatch) => {
   }
 };
 
-export const logout = () => {
+export const logout = () => dispatch => {
+  localStorage.removeItem('token');
+  localStorage.removeItem('user');
+  dispatch({ type: LOGOUT });
   toast.info('Logged out successfully');
-  return { type: LOGOUT };
+};
+
+// Add this new action to check auth state on refresh
+export const checkAuthState = () => dispatch => {
+  const token = localStorage.getItem('token');
+  const user = JSON.parse(localStorage.getItem('user') || 'null');
+  
+  if (token && user) {
+    dispatch({
+      type: AUTH_SUCCESS,
+      payload: { token, user }
+    });
+  }
 }; 
