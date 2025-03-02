@@ -12,8 +12,10 @@ class Login extends Component {
 
   handleSubmit = async (e) => {
     e.preventDefault();
-    const { username, password } = this.state;
-    await this.props.login(username, password);
+    await this.props.login({
+      username: this.state.username,
+      password: this.state.password
+    });
   };
 
   render() {
