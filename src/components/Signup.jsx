@@ -7,20 +7,22 @@ import Input from './common/Input';
 class Signup extends Component {
   state = {
     username: '',
-    password: '',
-    role: 'user'
+    password: ''
   };
 
   handleSubmit = async (e) => {
     e.preventDefault();
-    await this.props.signup(this.state);
+    await this.props.signup({
+      ...this.state,
+      role: 'user' // Hardcode role as user
+    });
   };
 
   render() {
     const { isAuthenticated, user } = this.props;
     
     if (isAuthenticated) {
-      return <Navigate to={user?.role === 'admin' ? '/admin' : '/dashboard'} />;
+      return <Navigate to="/dashboard" />;
     }
 
     return (
@@ -34,50 +36,24 @@ class Signup extends Component {
         <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
           <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
             <form className="space-y-6" onSubmit={this.handleSubmit}>
-              <div>
-                <label className="block text-sm font-medium text-gray-700">
-                  Username
-                </label>
-                <div className="mt-1">
-                  <Input
-                    value={this.state.username}
-                    onChange={(e) => this.setState({ username: e.target.value })}
-                    placeholder="Enter your username"
-                    required
-                  />
-                </div>
-              </div>
+              <Input
+                label="Username"
+                name="username"
+                value={this.state.username}
+                onChange={(e) => this.setState({ username: e.target.value })}
+                placeholder="Enter your username"
+                required
+              />
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700">
-                  Password
-                </label>
-                <div className="mt-1">
-                  <Input
-                    type="password"
-                    value={this.state.password}
-                    onChange={(e) => this.setState({ password: e.target.value })}
-                    placeholder="Enter your password"
-                    required
-                  />
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700">
-                  Role
-                </label>
-                <div className="mt-1">
-                  <select
-                    value={this.state.role}
-                    onChange={(e) => this.setState({ role: e.target.value })}
-                    className="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                  >
-                    <option value="user">User</option>
-                    <option value="admin">Admin</option>
-                  </select>
-                </div>
-              </div>
+              <Input
+                label="Password"
+                name="password"
+                type="password"
+                value={this.state.password}
+                onChange={(e) => this.setState({ password: e.target.value })}
+                placeholder="Enter your password"
+                required
+              />
 
               <button
                 type="submit"
