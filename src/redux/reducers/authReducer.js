@@ -1,11 +1,21 @@
 import { AUTH_SUCCESS, AUTH_FAIL, LOGOUT } from '../actions/types';
 
 const token = localStorage.getItem('token');
+const userDataStr = localStorage.getItem('userData');
+let userData = null;
+
+try {
+  if (userDataStr) {
+    userData = JSON.parse(userDataStr);
+  }
+} catch (error) {
+  console.error('Failed to parse user data:', error);
+}
 
 const initialState = {
   token: token,
-  isAuthenticated: !!token,
-  user: null,
+  isAuthenticated: !!token && !!userData,
+  user: userData,
   error: null
 };
 
@@ -22,6 +32,7 @@ const authReducer = (state = initialState, action) => {
       };
     case AUTH_FAIL:
       localStorage.removeItem('token');
+      localStorage.removeItem('userData');
       return {
         ...state,
         token: null,
@@ -31,6 +42,7 @@ const authReducer = (state = initialState, action) => {
       };
     case LOGOUT:
       localStorage.removeItem('token');
+      localStorage.removeItem('userData');
       return {
         ...state,
         token: null,
