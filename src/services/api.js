@@ -2,7 +2,11 @@ import axios from 'axios';
 
 // Create axios instance with base URL
 const api = axios.create({
-  baseURL: 'https://mernminiback.vercel.app/api'
+  baseURL: 'https://mernminiback.vercel.app/api',
+  timeout: 30000, // 30 second timeout
+  headers: {
+    'Content-Type': 'application/json'
+  }
 });
 
 // Add auth token to requests
@@ -16,18 +20,22 @@ api.interceptors.request.use((config) => {
 
 export const authAPI = {
   login: async (credentials) => {
-    console.log('Sending login request:', credentials.username, 'with password'); // Don't log password
+    console.log('Sending login request:', credentials.username, 'with password');
     try {
-      const response = await api.post('/auth/login', {
-        username: credentials.username,
-        password: credentials.password
+      const response = await api.post('/auth/login', credentials, {
+        validateStatus: function (status) {
+          return status < 500; // Accept all non-server error status codes
+        }
       });
-      console.log('Login response:', response.data); // Debug response
+      console.log('Login response:', response.data);
       if (response.data.token) {
         localStorage.setItem('token', response.data.token);
       }
       return response;
     } catch (error) {
+      if (error.code === 'ECONNABORTED') {
+        throw new Error('Server took too long to respond. Please try again.');
+      }
       console.error('Login error:', error.response?.data || error.message);
       throw error;
     }
