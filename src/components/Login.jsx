@@ -88,13 +88,27 @@ class Login extends Component {
               </div>
             </form>
 
-            <div className="mt-6">
+            <div className="mt-6 space-y-4">
               <Link
                 to="/signup"
                 className="text-center block text-sm text-blue-600 hover:text-blue-500"
               >
                 Don't have an account? Sign up
               </Link>
+              
+              <div className="border-t border-gray-200 pt-4">
+                <h3 className="text-sm font-medium text-gray-700 mb-2">Demo Accounts:</h3>
+                <div className="space-y-2 text-sm text-gray-600">
+                  <div>
+                    <strong>Admin Demo:</strong>
+                    <p>Username: admin12 | Password: 1234</p>
+                  </div>
+                  <div>
+                    <strong>User Demo:</strong>
+                    <p>Username: user123 | Password: 1234</p>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
