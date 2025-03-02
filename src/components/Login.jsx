@@ -18,7 +18,10 @@ class Login extends Component {
 
   handleSubmit = async (e) => {
     e.preventDefault();
-    console.log('Submitting:', this.state); // Debug log
+    console.log('Form submission:', {
+      username: this.state.username,
+      passwordLength: this.state.password?.length || 0
+    });
     await this.props.login({
       username: this.state.username,
       password: this.state.password

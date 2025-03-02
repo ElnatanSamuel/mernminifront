@@ -16,13 +16,21 @@ api.interceptors.request.use((config) => {
 
 export const authAPI = {
   login: async (credentials) => {
-    console.log('Sending login request:', credentials); // Debug request
-    const response = await api.post('/auth/login', credentials);
-    console.log('Login response:', response.data); // Debug response
-    if (response.data.token) {
-      localStorage.setItem('token', response.data.token);
+    console.log('Sending login request:', credentials.username, 'with password'); // Don't log password
+    try {
+      const response = await api.post('/auth/login', {
+        username: credentials.username,
+        password: credentials.password
+      });
+      console.log('Login response:', response.data); // Debug response
+      if (response.data.token) {
+        localStorage.setItem('token', response.data.token);
+      }
+      return response;
+    } catch (error) {
+      console.error('Login error:', error.response?.data || error.message);
+      throw error;
     }
-    return response;
   },
   
   signup: async (userData) => {
