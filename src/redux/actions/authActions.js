@@ -9,21 +9,19 @@ export const login = (credentials) => async (dispatch) => {
       throw new Error('Invalid response from server');
     }
     
-    // Store both token and user data
-    localStorage.setItem('token', response.data.token);
-    localStorage.setItem('user', JSON.stringify({
+    const userData = {
       username: response.data.username,
       role: response.data.role
-    }));
+    };
+    
+    localStorage.setItem('token', response.data.token);
+    localStorage.setItem('userData', JSON.stringify(userData));
 
     dispatch({
       type: AUTH_SUCCESS,
       payload: {
         token: response.data.token,
-        user: {
-          username: response.data.username,
-          role: response.data.role
-        }
+        user: userData
       }
     });
     toast.success('Login successful!');
@@ -66,7 +64,7 @@ export const signup = (userData) => async (dispatch) => {
 
 export const logout = () => dispatch => {
   localStorage.removeItem('token');
-  localStorage.removeItem('user');
+  localStorage.removeItem('userData');
   dispatch({ type: LOGOUT });
   toast.info('Logged out successfully');
 };
@@ -75,26 +73,24 @@ export const logout = () => dispatch => {
 export const checkAuthState = () => dispatch => {
   try {
     const token = localStorage.getItem('token');
-    const userStr = localStorage.getItem('user');
+    const userDataStr = localStorage.getItem('userData');
     
-    if (token && userStr) {
-      const user = JSON.parse(userStr);
-      if (user && user.role) {  // Validate user object
+    if (token && userDataStr) {
+      const userData = JSON.parse(userDataStr);
+      if (userData && userData.role) {
         dispatch({
           type: AUTH_SUCCESS,
-          payload: { token, user }
+          payload: { 
+            token,
+            user: userData
+          }
         });
-      } else {
-        // Invalid user data, clear storage
-        localStorage.removeItem('token');
-        localStorage.removeItem('user');
-        dispatch({ type: LOGOUT });
       }
     }
   } catch (error) {
     console.error('Auth state restoration failed:', error);
     localStorage.removeItem('token');
-    localStorage.removeItem('user');
+    localStorage.removeItem('userData');
     dispatch({ type: LOGOUT });
   }
 }; 
